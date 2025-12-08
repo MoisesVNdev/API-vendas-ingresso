@@ -52,3 +52,9 @@ Thumbs.db
 # VSCode Local History
 # ─────────────────────────────
 .history/
+
+# ─────────────────────────────
+# Arquivos de instrução npm
+# ─────────────────────────────
+Guia do npm da API vendas ingresso.odt
+.~lock.Guia do npm da API vendas ingresso.odt#
