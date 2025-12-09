@@ -1,0 +1,56 @@
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+    "email": "parceiro1@teste",
+    "password": "123"
+
+}
+
+### 
+POST http://localhost:3000/partners
+Content-Type: application/json
+
+{
+    "name": "parceiro1",
+    "email": "parceiro1@teste",
+    "password": "123",
+    "company_name": "Empresa teste 01"
+}
+
+###
+
+POST http://localhost:3000/customers
+Content-Type: application/json  
+
+{
+    "name": "cliente1",
+    "email": "cliente1@teste",
+    "password": "123",
+    "address": "Rua teste 01, 123 - Cidade - Estado - 00000-000",
+    "phone": "123456789"
+}
+
+### Criação de evento pelo parceiro 
+POST http://localhost:3000/partners/events
+Content-Type: application/json
+
+{
+    "name": "Show Teste 01",
+    "description": "Descrição do Show Teste 01",
+    "date": "2024-12-31T20:00:00Z",
+    "location": "Arena Teste, Cidade - Estado"
+
+}
+
+### Listagem de eventos do parceiro 
+GET http://localhost:3000/partners/events
+
+### Listagem de um evento específico do parceiro
+GET http://localhost:3000/partners/events/1
+
+### Listagem de eventos
+GET http://localhost:3000/events
+
+### Listagem de um evento específico
+GET http://localhost:3000/events/1
