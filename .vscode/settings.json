@@ -1,3 +1,9 @@
 {
-    "editor.suggest.showStatusBar": false
+    "editor.suggest.showStatusBar": false,
+    "cSpell.words": [
+        "debian",
+        "initdb",
+        "Inno",
+        "mysql"
+    ]
 }

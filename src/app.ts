@@ -1,5 +1,5 @@
 import express from 'express';
-
+import * as mysql from 'mysql2/promise';
 const app = express();
 
 app.use(express.json());
