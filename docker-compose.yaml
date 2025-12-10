@@ -5,6 +5,6 @@ services:
       - MYSQL_ROOT_PASSWORD=root
       - MYSQL_DATABASE=tickets
     ports:
-      - 33070:3307
+      - 3307:3306
     volumes:
       - ./db.sql:/docker-entrypoint-initdb.d/db.sql
