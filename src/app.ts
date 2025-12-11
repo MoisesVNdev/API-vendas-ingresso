@@ -3,7 +3,7 @@ import * as mysql from 'mysql2/promise';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
-
+// abre conexão com o banco de dados
 function createConnection() {
     return mysql.createConnection({
         host: 'localhost',
@@ -13,11 +13,13 @@ function createConnection() {
         port: 3307
     });
 }
-
+// inicializa o express
 const app = express();
 
+// middleware para parsear JSON
 app.use(express.json());
 
+// rotas que não precisam de autenticação
 const unprotectedRoutes = [
     {method: "POST", path: "/auth/login"},
     {method: "POST", path: "/partners/register"},
@@ -26,7 +28,7 @@ const unprotectedRoutes = [
 ];
 
 
-
+// middleware de autenticação
 app.use(async (req, res, next) => {
     const isUnprotectedRoute = unprotectedRoutes.some(
         (route) => route.method == req.method && req.path.startsWith(route.path)
@@ -60,11 +62,12 @@ app.use(async (req, res, next) => {
     }
 });
 
-
+// rota de teste
 app.get('/', (req, res) => {
     res.json({ message: "Hello World!" });
 });
 
+// Rotas do POST
 
 app.post("/auth/login", async(req, res) => {
     const { email, password } = req.body;
@@ -106,9 +109,6 @@ app.post("/partners/register", async(req, res) => {
     }
 });
 
-app.get("/partners", (req, res) => {
-});
-
 app.post("/customers/register", async(req, res) => {
         const { name, email, password, address, phone } = req.body;
     
@@ -129,9 +129,36 @@ app.post("/customers/register", async(req, res) => {
 
 });
 
+app.post("/partners/events", async (req, res) => {
+    const { name, description, date, location} = req.body;
+    const userId = req.user!.id;
+    const connection = await createConnection();
+    try{
+    const [rows] = await connection.execute<mysql.RowDataPacket[]>(
+        'SELECT * FROM partners WHERE user_id = ?', [userId]
+    );
+    const partner = rows.length ? rows[0] : null;
+
+    if(!partner) {
+        res.status(403).json({ message: "Acesso não autorizado" });
+        return;
+    }
+    
+    const eventDate = new Date(date);
+    const createdAt = new Date();
+
+    const [partnerResult] = await connection.execute<mysql.ResultSetHeader>("INSERT INTO events (name, description, date, location, created_at, partners_id) VALUES (?, ?, ?, ?, ?, ?)", [name, description, eventDate, location, createdAt, partner.id]);
+    res.status(201).json({ id: partnerResult.insertId, name, description, eventDate, location, createdAt, partners_id: partner.id, });
+    }finally {
+        await connection.end();
+    }
+});
+
 app.post("/events", (req, res) => {
     const { name, description, date, location} = req.body;
 });
+
+//Rotas do GET
 
 app.get("/events", async (req, res) => {
     const connection = await createConnection();
@@ -158,32 +185,6 @@ app.get("/events/:eventID", async(req, res) => {
         return;
     }
     res.json(event);
-    }finally {
-        await connection.end();
-    }
-});
-
-
-app.post("/partners/events", async (req, res) => {
-    const { name, description, date, location} = req.body;
-    const userId = req.user!.id;
-    const connection = await createConnection();
-    try{
-    const [rows] = await connection.execute<mysql.RowDataPacket[]>(
-        'SELECT * FROM partners WHERE user_id = ?', [userId]
-    );
-    const partner = rows.length ? rows[0] : null;
-
-    if(!partner) {
-        res.status(403).json({ message: "Acesso não autorizado" });
-        return;
-    }
-    
-    const eventDate = new Date(date);
-    const createdAt = new Date();
-
-    const [partnerResult] = await connection.execute<mysql.ResultSetHeader>("INSERT INTO events (name, description, date, location, created_at, partners_id) VALUES (?, ?, ?, ?, ?, ?)", [name, description, eventDate, location, createdAt, partner.id]);
-    res.status(201).json({ id: partnerResult.insertId, name, description, eventDate, location, createdAt, partners_id: partner.id, });
     }finally {
         await connection.end();
     }
@@ -244,6 +245,10 @@ app.get("/partners/events/:eventId", async(req, res) => {
     }
 });
 
+app.get("/partners", (req, res) => {
+});
+
+// inicia o servidor
 app.listen(3000, async () => {
     const connection = await createConnection();
     await connection.execute("SET FOREIGN_KEY_CHECKS = 0");
