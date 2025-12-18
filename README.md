@@ -33,11 +33,11 @@ npm install express bcrypt jsonwebtoken mysql2
 Dependências de desenvolvimento (exemplos recomendados):
 
 ```bash
-npm install --save-dev typescript ts-node nodemon
+npm install --save-dev typescript tsx nodemon
 npm i --save-dev @types/express @types/bcrypt @types/jsonwebtoken @types/node
 ```
 
-> Observação: `nodemon` e `ts-node` são úteis durante desenvolvimento.
+> Observação: `nodemon` e `tsx` são úteis durante desenvolvimento.
 
 ### Configuração Inicial
 
